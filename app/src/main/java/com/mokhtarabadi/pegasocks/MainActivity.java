@@ -1,14 +1,57 @@
 package com.mokhtarabadi.pegasocks;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
+import android.widget.Toast;
+
+import com.mokhtarabadi.pegasocks.databinding.ActivityMainBinding;
 
 public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        ActivityMainBinding binding = ActivityMainBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
+
+        binding.start.setOnClickListener(v -> {
+            Intent intent = MainService.prepare(this);
+            if (intent != null) {
+                startActivityForResult(intent, 1);
+            } else {
+                toggleVpnService(true);
+            }
+        });
+
+        binding.stop.setOnClickListener(v -> toggleVpnService(false));
+        binding.config.setOnClickListener(v -> startActivity(new Intent(MainActivity.this, EditConfigActivity.class)));
     }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        if (requestCode == 1 && resultCode == Activity.RESULT_OK) {
+            toggleVpnService(true);
+        } else {
+            Toast.makeText(this, "Really!?", Toast.LENGTH_LONG).show();
+        }
+
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    @Override
+    public void onBackPressed() {
+        moveTaskToBack(false);
+    }
+
+    private void toggleVpnService(boolean start) {
+        Intent intent = new Intent(this, MainService.class);
+        intent.setAction(start ? MainService.ACTION_START : MainService.ACTION_STOP);
+        ContextCompat.startForegroundService(this, intent);
+    }
+
 }
