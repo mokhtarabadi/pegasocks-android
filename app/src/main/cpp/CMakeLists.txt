@@ -1,38 +1,29 @@
 cmake_minimum_required(VERSION 3.10.2)
-
-project("native")
-
-include_directories(prebuilt)
-
-# badvpn static lib
-add_library(badvpn
-        STATIC
-        IMPORTED)
-set_target_properties(
-        badvpn
-        PROPERTIES IMPORTED_LOCATION
-        ${CMAKE_SOURCE_DIR}/prebuilt/${ANDROID_ABI}/libbadvpn.a)
-
-# pegasocks static lib
-add_library(pegasocks
-        STATIC
-        IMPORTED)
-set_target_properties(
-        pegasocks
-        PROPERTIES IMPORTED_LOCATION
-        ${CMAKE_SOURCE_DIR}/prebuilt/${ANDROID_ABI}/libpegasocks.a)
-
-# native
-add_library(native
-        SHARED
-        native.cpp)
+project("native-lib")
 
 # log-lib
 find_library(log-lib
         log)
 
-target_link_libraries(
-        native
-        badvpn
-        pegasocks
+# native-lib
+add_library(native-lib
+        SHARED
+        native-lib.cpp)
+
+target_include_directories(native-lib PRIVATE
+        ${CMAKE_SOURCE_DIR}/prebuilt/include
+        ${CMAKE_SOURCE_DIR}/prebuilt/include/${ANDROID_ABI})
+
+target_link_libraries(native-lib
+        ${CMAKE_SOURCE_DIR}/prebuilt/lib/${ANDROID_ABI}/libtun2socks.a
+
+        ${CMAKE_SOURCE_DIR}/prebuilt/lib/${ANDROID_ABI}/libpegas.a
+
+        ${CMAKE_SOURCE_DIR}/prebuilt/lib/${ANDROID_ABI}/libevent.a
+        ${CMAKE_SOURCE_DIR}/prebuilt/lib/${ANDROID_ABI}/libevent_mbedtls.a
+
+        ${CMAKE_SOURCE_DIR}/prebuilt/lib/${ANDROID_ABI}/libmbedtls.a
+        ${CMAKE_SOURCE_DIR}/prebuilt/lib/${ANDROID_ABI}/libmbedx509.a
+        ${CMAKE_SOURCE_DIR}/prebuilt/lib/${ANDROID_ABI}/libmbedcrypto.a
+
         ${log-lib})

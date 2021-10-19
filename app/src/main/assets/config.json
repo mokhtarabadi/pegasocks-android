@@ -1,0 +1,26 @@
+{
+  "servers": [
+    {
+      "server_type": "v2ray",
+      "server_address": "1.2.3.4",
+      "server_port": 443,
+      "secure" : "chacha20-poly1305",
+      "password": "uuid",
+      "ssl" : {
+        "sni" : "domain"
+      },
+      "websocket": {
+        "path": "/path",
+        "hostname" : "domain"
+      }
+    }
+  ],
+  "local_address": "127.0.0.1",
+  "local_port": 1080,
+  "control_port": 9090,
+  "log_level": 1,
+  "android" : {
+    "protect_address" : "127.0.0.1",
+    "protect_port" : 9091
+  }
+}
